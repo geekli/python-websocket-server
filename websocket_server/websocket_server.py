@@ -293,7 +293,9 @@ class WebSocketHandler(StreamRequestHandler):
         self.request.send(header + payload)
 
     def handshake(self):
-        message = self.request.recv(1024).decode().strip()
+        message = self.request.recv(1024).decode()
+        if not message.endswith("\r\n\r\n"):
+            message +=self.request.recv(1024).decode()
         upgrade = re.search('\nupgrade[\s]*:[\s]*websocket', message.lower())
         if not upgrade:
             self.keep_alive = False
